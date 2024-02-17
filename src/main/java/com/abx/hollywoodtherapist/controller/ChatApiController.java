@@ -6,9 +6,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ChatApiController {
     // TODO: Message mapping
-
-    public String message(long userId, long sessionId) {
-        ImmutableSessionDto.builder().sessionId(sessionId).systemPrompt("Hello, World!").build();
-        return "Hello, World!";
-    }
 }

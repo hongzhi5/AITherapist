@@ -7,6 +7,7 @@ public interface SessionDto {
 
     String getSessionId();
     String getSystemPrompt();
-
+    void setSessionId(String sessionId);
+    void setSystemPrompt(String systemPrompt);
 
 }
