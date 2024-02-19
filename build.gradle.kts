@@ -3,7 +3,7 @@ plugins {
     checkstyle
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
-    id("com.diffplug.spotless") version "6.18.0"
+    id("com.diffplug.spotless") version "6.13.0"
     id("org.flywaydb.flyway") version "7.15.0"
 }
 

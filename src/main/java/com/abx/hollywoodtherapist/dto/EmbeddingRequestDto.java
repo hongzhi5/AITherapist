@@ -2,9 +2,8 @@ package com.abx.hollywoodtherapist.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.immutables.value.Value;
-
 import java.util.List;
+import org.immutables.value.Value;
 
 @Value.Immutable
 @JsonSerialize(as = ImmutableEmbeddingRequestDto.class)
@@ -14,6 +13,6 @@ public interface EmbeddingRequestDto {
     default String getModel() {
         return "text-embedding-3-small";
     }
-    List<String> getInput();
 
+    List<String> getInput();
 }
