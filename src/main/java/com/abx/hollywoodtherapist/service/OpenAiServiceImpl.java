@@ -10,14 +10,13 @@ import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.embedding.EmbeddingRequest;
 import com.theokanning.openai.embedding.EmbeddingResult;
 import com.theokanning.openai.service.OpenAiService;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Service
 public class OpenAiServiceImpl implements GenerativeAiService<String, List<CompletionChoice>> {
