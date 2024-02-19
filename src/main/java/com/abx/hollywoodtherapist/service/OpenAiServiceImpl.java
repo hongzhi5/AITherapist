@@ -59,7 +59,8 @@ public class OpenAiServiceImpl implements GenerativeAiService<String, List<Compl
     }
 
     public List<ChatMessage> continueConversation(List<ChatMessage> originalConversation, String userPrompt) {
-        List<ChatMessage> conversation = new ArrayList<>(originalConversation != null ? originalConversation : Collections.emptyList());
+        List<ChatMessage> conversation =
+                new ArrayList<>(originalConversation != null ? originalConversation : Collections.emptyList());
         if (conversation.isEmpty()) {
             conversation.add(new ChatMessage(ChatMessageRole.SYSTEM.value(), "You are talking to an AI therapist."));
         }
