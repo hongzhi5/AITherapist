@@ -10,10 +10,14 @@ import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.embedding.EmbeddingRequest;
 import com.theokanning.openai.embedding.EmbeddingResult;
 import com.theokanning.openai.service.OpenAiService;
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class OpenAiServiceImpl implements GenerativeAiService<String, List<CompletionChoice>> {
@@ -24,6 +28,8 @@ public class OpenAiServiceImpl implements GenerativeAiService<String, List<Compl
     private String openAiChatModel;
 
     private final OpenAiService openAiService;
+
+    private static final Logger log = LoggerFactory.getLogger(OpenAiServiceImpl.class);
 
     public OpenAiServiceImpl(OpenAiService openAiService) {
         this.openAiService = openAiService;
@@ -52,9 +58,9 @@ public class OpenAiServiceImpl implements GenerativeAiService<String, List<Compl
         return choice.getText();
     }
 
-    public List<ChatMessage> continueConversation(List<ChatMessage> conversation, String userPrompt) {
-        if (conversation == null || conversation.isEmpty()) {
-            conversation = new ArrayList<>();
+    public List<ChatMessage> continueConversation(List<ChatMessage> originalConversation, String userPrompt) {
+        List<ChatMessage> conversation = new ArrayList<>(originalConversation != null ? originalConversation : Collections.emptyList());
+        if (conversation.isEmpty()) {
             conversation.add(new ChatMessage(ChatMessageRole.SYSTEM.value(), "You are talking to an AI therapist."));
         }
 
@@ -75,7 +81,7 @@ public class OpenAiServiceImpl implements GenerativeAiService<String, List<Compl
                     .getMessage();
             conversation.add(responseMessage);
         } catch (Exception e) {
-            System.err.println("Error during chat completion: " + e.getMessage());
+            log.error("Error during chat completion: {}", e.getMessage(), e);
             conversation.add(new ChatMessage(
                     ChatMessageRole.SYSTEM.value(), "Sorry, there was a problem processing your request."));
         }
@@ -118,7 +124,7 @@ public class OpenAiServiceImpl implements GenerativeAiService<String, List<Compl
                 return response.getChoices().get(0).getText().trim();
             }
         } catch (Exception e) {
-            System.err.println("Error summarizing text: " + e.getMessage());
+            log.error("Error summarizing text: {}", e.getMessage(), e);
             return "Error summarizing text.";
         }
 
