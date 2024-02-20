@@ -9,13 +9,12 @@ import com.abx.hollywoodtherapist.model.Conversation;
 import com.abx.hollywoodtherapist.repository.ConversationRepository;
 import com.abx.hollywoodtherapist.repository.SummaryRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 public class TherapyServiceTest {
 
-    @Mock
-    MessageService messageService;
+
+    MessageService messageService = Mockito.mock(MessageService.class);
     ConversationRepository conversationRepository = Mockito.mock(ConversationRepository.class);
     SummaryRepository summaryRepository = Mockito.mock(SummaryRepository.class);
 
