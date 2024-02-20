@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Conversation {
     @Id
     private UUID id;
+
     private String userId;
     private String sessionId;
     private LocalDateTime timeStamp;
@@ -68,8 +69,5 @@ public class Conversation {
     }
 
     // Constructors
-    public Conversation() {
-
-    }
-
+    public Conversation() {}
 }

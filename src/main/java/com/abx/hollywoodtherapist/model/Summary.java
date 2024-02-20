@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Summary {
     @Id
     private UUID id;
+
     private String userId;
     private String sessionId;
     private LocalDateTime timeStamp;
@@ -66,6 +67,5 @@ public class Summary {
         this.content = content;
     }
 
-    public Summary() {
-    }
+    public Summary() {}
 }
