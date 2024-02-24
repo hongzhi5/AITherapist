@@ -36,11 +36,14 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 
 
-    //runtimeOnly("org.postgresql:postgresql")
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+    runtimeOnly("org.postgresql:postgresql")
+    //implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mockito:mockito-core:5.4.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.4.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 
     implementation ("com.theokanning.openai-gpt3-java:service:0.18.2")
 }
@@ -73,9 +76,9 @@ spotless {
     }
 }
 
-//flyway {
-//    url = "jdbc:postgresql://localhost:5432/hollywood_therapist_db"
-//    user = "postgres"
-//    password = "postgres"
-//    schemas = arrayOf("public")
-//}
+flyway {
+    url = "jdbc:postgresql://localhost:5432/hollywood_therapist_db"
+    user = "postgres"
+    password = "postgres"
+    schemas = arrayOf("public")
+}
