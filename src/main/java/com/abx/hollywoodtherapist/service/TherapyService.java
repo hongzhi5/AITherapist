@@ -76,6 +76,40 @@ public class TherapyService {
         return response;
     }
 
+
+    public List<String> generateMovieTitles (String userId) {
+        // Generate recommendation
+        String systemPrompt = "You are a psychotherapist who has been following the conversation summaries with a client. " +
+                "Based on the insights gained from these summaries about the client's emotional state, interests, " +
+                "and the issues they are facing, please recommend a series of movies that could resonate with, inspire, " +
+                "or provide solace to the client. List each movie title separated by a \"#\" symbol, and ensure that only " +
+                "the titles are mentioned without any additional content or commentary.\n";
+        String summary = getMergedSummaries(userId);
+        // TODO: Use ChatAPIService message(systemPrompt + summary)
+        List<String> movieTitles = Arrays.asList(summary.split("#"));
+        return movieTitles;
+    }
+
+    public void generateTitlesEmbedding (String userId, String content) {
+        String systemPrompt = "Please provide a summary of the last 5 messages";
+        for (String title : generateMovieTitles(userId)) {
+            // TODO: Use ChatAPIService to generate embedding for each title
+        }
+    }
+
+    public void getMovieList (String userId) {
+
+    }
+
+    public String getMergedSummaries (String userId) {
+        List<Summary> summaries = summaryRepository.findByUserId(userId);
+        List<Summary> latestSummaries = summaries.stream()
+                .sorted(Comparator.comparing(Summary::getTimeStamp).reversed())
+                .limit(5)
+                .toList();
+        return latestSummaries.stream().map(Summary::getContent).collect(Collectors.joining("\n"));
+    }
+
     public void saveConversation(String userId, String content, String type) {
         // Save conversation to database
         Conversation conversation = new Conversation.Builder()
