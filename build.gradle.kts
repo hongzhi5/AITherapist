@@ -3,7 +3,7 @@ plugins {
     checkstyle
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
-    id("com.diffplug.spotless") version "6.18.0"
+    id("com.diffplug.spotless") version "6.13.0"
     id("org.flywaydb.flyway") version "7.15.0"
 }
 
@@ -28,11 +28,26 @@ dependencies {
 
     annotationProcessor("org.immutables:value:2.9.3")
     compileOnly("org.immutables:value:2.9.3")
+    implementation("org.immutables:value:2.9.3")
+
+    implementation("com.fasterxml.jackson.core:jackson-core:2.15.4")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.4")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.4")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.15.4")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.4")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 
-    runtimeOnly("org.postgresql:postgresql") // postgres driver
+
+    runtimeOnly("org.postgresql:postgresql")
+    //implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito:mockito-core:5.4.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.4.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
+
+    implementation ("com.theokanning.openai-gpt3-java:service:0.18.2")
 }
 
 tasks.withType<Test> {
