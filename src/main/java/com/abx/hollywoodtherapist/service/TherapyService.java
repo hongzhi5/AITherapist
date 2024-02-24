@@ -13,8 +13,9 @@ public class TherapyService {
     private final ConversationRepository conversationRepository;
     private final SummaryRepository summaryRepository;
 
-    private int convCount = 0;
-    private int summaryCount = 0;
+    private final HashMap<String, Integer> convCountMap = new HashMap<>();
+    private final HashMap<String, Integer> summaryCountMap = new HashMap<>();
+
     private SessionManager sessionManager;
 
     public TherapyService(
@@ -28,6 +29,9 @@ public class TherapyService {
 
     public String getResponse(String userId, String userMessage, String systemPrompt) {
         String context = "";
+        int convCount = convCountMap.getOrDefault(userId, 0);
+        int summaryCount = summaryCountMap.getOrDefault(userId, 0);
+
         if (summaryCount == 0) {
             context = "";
         }
@@ -35,22 +39,26 @@ public class TherapyService {
         saveConversation(userId, userMessage, "user");
         saveConversation(userId, response, "system");
         convCount++;
+        convCountMap.put(userId, convCount);
 
         if (convCount % 5 != 0) {
             return response;
         }
 
         convCount = 0;
+        convCountMap.put(userId, convCount);
         String summary = "Use ChatAPIService to get a summary of 5 messages";
         saveSummary(userId, summary);
         summaryCount++;
+        summaryCountMap.put(userId, summaryCount);
 
         if (summaryCount % 5 != 0) {
             return response;
         }
 
         summaryCount = 1;
-        List<Summary> summaries = summaryRepository.findBySessionId(userId);
+        summaryCountMap.put(userId, summaryCount);
+        List<Summary> summaries = summaryRepository.findByUserId(userId);
         List<Summary> latestSummaries = summaries.stream()
                 .sorted(Comparator.comparing(Summary::getTimeStamp).reversed())
                 .limit(5)
@@ -64,27 +72,29 @@ public class TherapyService {
         summary = "Use ChatAPIService to get a summary of 5 summaries";
         saveSummary(userId, summary);
 
-
         // TODO: Set a threshold to trigger deletion of old conversations
         return response;
     }
 
     public void saveConversation(String userId, String content, String type) {
         // Save conversation to database
-        Conversation conversation = new Conversation();
-        conversation.setUserId(userId);
-        conversation.setContent(content);
-        conversation.setType(type);
-        conversation.setTimeStamp(java.time.LocalDateTime.now());
+        Conversation conversation = new Conversation.Builder()
+            .setUserId(userId)
+            .setContent(content)
+            .setTimeStamp(System.currentTimeMillis())
+            .setType(type)
+            .build();
         conversationRepository.save(conversation);
     }
 
     public void saveSummary(String userId, String content) {
         // Save summary to database
-        Summary summary = new Summary();
-        summary.setUserId(userId);
-        summary.setContent(content);
-        summary.setTimeStamp(java.time.LocalDateTime.now());
+        Summary summary = new Summary.Builder()
+            .setUserId(userId)
+            .setSessionId(userId)
+            .setTimeStamp(System.currentTimeMillis())
+            .setContent(content)
+            .build();
         summaryRepository.save(summary);
     }
 }

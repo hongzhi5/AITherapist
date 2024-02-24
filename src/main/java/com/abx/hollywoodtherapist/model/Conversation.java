@@ -7,15 +7,55 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "conversation")
 public class Conversation {
+    private Conversation() {}
     @Id
     private UUID id;
-
     private String userId;
     private String sessionId;
-    private LocalDateTime timeStamp;
+    private long timeStamp;
     private String content;
-
     private String type;
+
+    public static class Builder {
+        private Conversation conversation;
+
+        public Builder() {
+            conversation = new Conversation();
+        }
+        public Builder setId(UUID id) {
+            conversation.id = id;
+            return this;
+        }
+
+        public Builder setUserId(String userId) {
+            conversation.userId = userId;
+            return this;
+        }
+
+        public Builder setSessionId(String sessionId) {
+            conversation.sessionId = sessionId;
+            return this;
+        }
+
+        public Builder setTimeStamp(long timeStamp) {
+            conversation.timeStamp = timeStamp;
+            return this;
+        }
+
+        public Builder setContent(String content) {
+            conversation.content = content;
+            return this;
+        }
+
+        public Builder setType(String type) {
+            conversation.type = type;
+            return this;
+        }
+
+        public Conversation build() {
+            return conversation;
+        }
+    }
 
     // Getters
     public UUID getId() {
@@ -30,7 +70,7 @@ public class Conversation {
         return sessionId;
     }
 
-    public LocalDateTime getTimeStamp() {
+    public long getTimeStamp() {
         return timeStamp;
     }
 
@@ -41,33 +81,4 @@ public class Conversation {
     public String getType() {
         return type;
     }
-
-    // Setters
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public void setTimeStamp(LocalDateTime timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    // Constructors
-    public Conversation() {}
 }

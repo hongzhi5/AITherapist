@@ -7,13 +7,49 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "summary")
 public class Summary {
+    private Summary() {}
     @Id
     private UUID id;
-
     private String userId;
     private String sessionId;
-    private LocalDateTime timeStamp;
+    private long timeStamp;
     private String content;
+
+    public static class Builder {
+        private Summary summary;
+
+        public Builder() {
+            summary = new Summary();
+        }
+        public Builder setId(UUID id) {
+            summary.id = id;
+            return this;
+        }
+
+        public Builder setUserId(String userId) {
+            summary.userId = userId;
+            return this;
+        }
+
+        public Builder setSessionId(String sessionId) {
+            summary.sessionId = sessionId;
+            return this;
+        }
+
+        public Builder setTimeStamp(long timeStamp) {
+            summary.timeStamp = timeStamp;
+            return this;
+        }
+
+        public Builder setContent(String content) {
+            summary.content = content;
+            return this;
+        }
+
+        public Summary build() {
+            return summary;
+        }
+    }
 
     // Getters
     public UUID getId() {
@@ -28,44 +64,11 @@ public class Summary {
         return sessionId;
     }
 
-    public LocalDateTime getTimeStamp() {
+    public long getTimeStamp() {
         return timeStamp;
     }
 
     public String getContent() {
         return content;
     }
-
-    // Setters
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public void setTimeStamp(LocalDateTime timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    // Constructors
-    public Summary(UUID id, String userId, String sessionId, LocalDateTime timeStamp, String content) {
-        this.id = id;
-        this.userId = userId;
-        this.sessionId = sessionId;
-        this.timeStamp = timeStamp;
-        this.content = content;
-    }
-
-    public Summary() {}
 }

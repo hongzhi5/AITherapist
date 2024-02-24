@@ -5,7 +5,7 @@ import java.util.*;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface SummaryRepository extends MongoRepository<Summary, String> {
-    List<Summary> findBySessionId(String userId);
+    List<Summary> findByUserId(String userId);
 
     void deleteByIdIn(List<UUID> ids);
 }
