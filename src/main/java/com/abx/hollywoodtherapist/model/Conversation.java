@@ -1,6 +1,5 @@
 package com.abx.hollywoodtherapist.model;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,8 +7,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "conversation")
 public class Conversation {
     private Conversation() {}
+
     @Id
     private UUID id;
+
     private String userId;
     private String sessionId;
     private long timeStamp;
@@ -22,6 +23,7 @@ public class Conversation {
         public Builder() {
             conversation = new Conversation();
         }
+
         public Builder setId(UUID id) {
             conversation.id = id;
             return this;

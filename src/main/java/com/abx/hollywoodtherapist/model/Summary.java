@@ -1,6 +1,5 @@
 package com.abx.hollywoodtherapist.model;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,8 +7,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "summary")
 public class Summary {
     private Summary() {}
+
     @Id
     private UUID id;
+
     private String userId;
     private String sessionId;
     private long timeStamp;
@@ -21,6 +22,7 @@ public class Summary {
         public Builder() {
             summary = new Summary();
         }
+
         public Builder setId(UUID id) {
             summary.id = id;
             return this;

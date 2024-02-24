@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 
 public class TherapyServiceTest {
 
-
     MessageService messageService = Mockito.mock(MessageService.class);
     ConversationRepository conversationRepository = Mockito.mock(ConversationRepository.class);
     SummaryRepository summaryRepository = Mockito.mock(SummaryRepository.class);
@@ -24,13 +23,11 @@ public class TherapyServiceTest {
     Conversation mockConversation = Mockito.mock(Conversation.class);
     Summary mockSummary = Mockito.mock(Summary.class);
 
-
     @Test
     public void testSaveConversation() {
         when(conversationRepository.save(any(Conversation.class))).thenReturn(mockConversation);
         therapyService.saveConversation("userId", "userMessage", "user");
         verify(conversationRepository, times(1)).save(any(Conversation.class));
-
     }
 
     @Test
@@ -49,7 +46,6 @@ public class TherapyServiceTest {
         therapyService.getResponse("userId2", "userMessage", "systemPrompt");
 
         verify(summaryRepository, times(0)).save(any());
-
     }
 
     @Test
@@ -65,7 +61,7 @@ public class TherapyServiceTest {
 
     @Test
     public void testGetResponse_doSummerizeConversation() {
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             therapyService.getResponse("userId1", "userMessage", "systemPrompt");
         }
         verify(summaryRepository, times(1)).save(any());
