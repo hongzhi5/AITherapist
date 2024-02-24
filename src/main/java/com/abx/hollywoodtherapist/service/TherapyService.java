@@ -1,8 +1,15 @@
 package com.abx.hollywoodtherapist.service;
 
-import com.abx.hollywoodtherapist.model.*;
-import com.abx.hollywoodtherapist.repository.*;
-import java.util.*;
+import com.abx.hollywoodtherapist.model.Conversation;
+import com.abx.hollywoodtherapist.model.Summary;
+import com.abx.hollywoodtherapist.repository.ConversationRepository;
+import com.abx.hollywoodtherapist.repository.SummaryRepository;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +20,8 @@ public class TherapyService {
     private final ConversationRepository conversationRepository;
     private final SummaryRepository summaryRepository;
 
-    private final HashMap<String, Integer> convCountMap = new HashMap<>();
-    private final HashMap<String, Integer> summaryCountMap = new HashMap<>();
+    private final Map<String, Integer> convCountMap = new HashMap<>();
+    private final Map<String, Integer> summaryCountMap = new HashMap<>();
 
     private SessionManager sessionManager;
 
@@ -78,9 +85,12 @@ public class TherapyService {
         // Generate recommendation
         String systemPrompt =
                 "You are a psychotherapist who has been following the conversation summaries with a client. "
-                        + "Based on the insights gained from these summaries about the client's emotional state, interests, "
-                        + "and the issues they are facing, please recommend a series of movies that could resonate with, inspire, "
-                        + "or provide solace to the client. List each movie title separated by a \"#\" symbol, and ensure that only "
+                        + "Based on the insights gained from these summaries "
+                        + "about the client's emotional state, interests, "
+                        + "and the issues they are facing, please recommend "
+                        + "a series of movies that could resonate with, inspire, "
+                        + "or provide solace to the client. List each movie "
+                        + "title separated by a \"#\" symbol, and ensure that only "
                         + "the titles are mentioned without any additional content or commentary.\n";
         String summary = getMergedSummaries(userId);
         // TODO: Use ChatAPIService message(systemPrompt + summary)

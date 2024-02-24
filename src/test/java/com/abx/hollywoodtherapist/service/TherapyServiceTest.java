@@ -1,6 +1,5 @@
 package com.abx.hollywoodtherapist.service;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -10,31 +9,34 @@ import com.abx.hollywoodtherapist.model.Summary;
 import com.abx.hollywoodtherapist.repository.ConversationRepository;
 import com.abx.hollywoodtherapist.repository.SummaryRepository;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 public class TherapyServiceTest {
 
-    MessageService messageService = Mockito.mock(MessageService.class);
-    ConversationRepository conversationRepository = Mockito.mock(ConversationRepository.class);
-    SummaryRepository summaryRepository = Mockito.mock(SummaryRepository.class);
+    private final MessageService messageService = Mockito.mock(MessageService.class);
+    private final ConversationRepository conversationRepository = Mockito.mock(ConversationRepository.class);
+    private final SummaryRepository summaryRepository = Mockito.mock(SummaryRepository.class);
 
-    TherapyService therapyService = new TherapyService(messageService, conversationRepository, summaryRepository);
+    private final TherapyService therapyService =
+            new TherapyService(messageService, conversationRepository, summaryRepository);
 
-    Conversation mockConversation = Mockito.mock(Conversation.class);
-    Summary mockSummary = Mockito.mock(Summary.class);
+    private final Conversation mockConversation = Mockito.mock(Conversation.class);
+    private final Summary mockSummary = Mockito.mock(Summary.class);
 
     @Test
     public void testSaveConversation() {
-        when(conversationRepository.save(any(Conversation.class))).thenReturn(mockConversation);
+        when(conversationRepository.save(ArgumentMatchers.any(Conversation.class)))
+                .thenReturn(mockConversation);
         therapyService.saveConversation("userId", "userMessage", "user");
-        verify(conversationRepository, times(1)).save(any(Conversation.class));
+        verify(conversationRepository, times(1)).save(ArgumentMatchers.any(Conversation.class));
     }
 
     @Test
     public void testSaveSummary() {
-        when(summaryRepository.save(any(Summary.class))).thenReturn(mockSummary);
+        when(summaryRepository.save(ArgumentMatchers.any(Summary.class))).thenReturn(mockSummary);
         therapyService.saveSummary("userId", "summary");
-        verify(summaryRepository, times(1)).save(any(Summary.class));
+        verify(summaryRepository, times(1)).save(ArgumentMatchers.any(Summary.class));
     }
 
     @Test
@@ -45,7 +47,7 @@ public class TherapyServiceTest {
         therapyService.getResponse("userId1", "userMessage", "systemPrompt");
         therapyService.getResponse("userId2", "userMessage", "systemPrompt");
 
-        verify(summaryRepository, times(0)).save(any());
+        verify(summaryRepository, times(0)).save(ArgumentMatchers.any());
     }
 
     @Test
@@ -56,14 +58,14 @@ public class TherapyServiceTest {
         therapyService.getResponse("userId1", "userMessage", "systemPrompt");
         therapyService.getResponse("userId1", "userMessage", "systemPrompt");
 
-        verify(summaryRepository, times(1)).save(any());
+        verify(summaryRepository, times(1)).save(ArgumentMatchers.any());
     }
 
     @Test
-    public void testGetResponse_doSummerizeConversation() {
+    public void testGetResponse_doSummarizeConversation() {
         for (int i = 0; i < 5; i++) {
             therapyService.getResponse("userId1", "userMessage", "systemPrompt");
         }
-        verify(summaryRepository, times(1)).save(any());
+        verify(summaryRepository, times(1)).save(ArgumentMatchers.any());
     }
 }
