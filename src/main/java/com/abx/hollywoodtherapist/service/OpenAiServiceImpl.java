@@ -1,12 +1,10 @@
 package com.abx.hollywoodtherapist.service;
 
-import com.abx.hollywoodtherapist.dto.EmbeddingRequestDto;
 import com.theokanning.openai.completion.CompletionChoice;
 import com.theokanning.openai.completion.CompletionRequest;
 import com.theokanning.openai.completion.CompletionResult;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
-import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.embedding.EmbeddingRequest;
 import com.theokanning.openai.embedding.EmbeddingResult;
 import com.theokanning.openai.service.OpenAiService;
@@ -57,54 +55,45 @@ public class OpenAiServiceImpl implements GenerativeAiService<String, List<Compl
         return choice.getText();
     }
 
-    public List<ChatMessage> continueConversation(List<ChatMessage> originalConversation, String userPrompt) {
-        List<ChatMessage> conversation =
-                new ArrayList<>(originalConversation != null ? originalConversation : Collections.emptyList());
-        if (conversation.isEmpty()) {
-            conversation.add(new ChatMessage(ChatMessageRole.SYSTEM.value(), "You are talking to an AI therapist."));
-        }
-
-        if (userPrompt != null && !userPrompt.isEmpty()) {
-            conversation.add(new ChatMessage(ChatMessageRole.USER.value(), userPrompt));
-        }
+    public String continueConversation(List<ChatMessage> userPrompts, List<ChatMessage> gptResponses) {
+        List<ChatMessage> fullConversation = new ArrayList<>();
+        fullConversation.addAll(userPrompts);
+        fullConversation.addAll(gptResponses);
 
         ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest.builder()
                 .model(openAiChatModel)
-                .messages(conversation)
-                .maxTokens(100)
+                .messages(fullConversation)
+                .maxTokens(200)
                 .build();
+
         try {
-            ChatMessage responseMessage = openAiService
+            ChatMessage newGptResponse = openAiService
                     .createChatCompletion(chatCompletionRequest)
                     .getChoices()
                     .get(0)
                     .getMessage();
-            conversation.add(responseMessage);
-        } catch (Exception e) {
-            log.error("Error during chat completion: {}", e.getMessage(), e);
-            conversation.add(new ChatMessage(
-                    ChatMessageRole.SYSTEM.value(), "Sorry, there was a problem processing your request."));
-        }
 
-        return conversation;
+            return newGptResponse.getContent();
+        } catch (Exception e) {
+            log.error("Error: {}", e.getMessage(), e);
+            return "Something went wrong";
+        }
     }
 
-    public double[][] getEmbeddings(EmbeddingRequestDto requestDto) {
-        EmbeddingRequest openAiRequest = EmbeddingRequest.builder()
-                .model(requestDto.getModel())
-                .input(requestDto.getInput())
-                .build();
+    public List<Double> getEmbeddings(String input) {
+        String defaultModel = openAiEmbeddingModel;
+        List<String> inputs = Collections.singletonList(input);
+
+        EmbeddingRequest openAiRequest =
+                EmbeddingRequest.builder().model(defaultModel).input(inputs).build();
 
         EmbeddingResult result = openAiService.createEmbeddings(openAiRequest);
-        double[][] allEmbeddings = new double[result.getData().size()][];
-
-        for (int i = 0; i < result.getData().size(); i++) {
-            List<Double> embeddingList = result.getData().get(i).getEmbedding();
-            allEmbeddings[i] =
-                    embeddingList.stream().mapToDouble(Double::doubleValue).toArray();
+        if (!result.getData().isEmpty()
+                && !result.getData().get(0).getEmbedding().isEmpty()) {
+            return result.getData().get(0).getEmbedding();
+        } else {
+            return Collections.emptyList();
         }
-
-        return allEmbeddings;
     }
 
     public String summarizeText(String inputText) {
