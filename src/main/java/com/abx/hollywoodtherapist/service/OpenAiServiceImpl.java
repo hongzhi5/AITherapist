@@ -5,6 +5,7 @@ import com.theokanning.openai.completion.CompletionRequest;
 import com.theokanning.openai.completion.CompletionResult;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
+import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.embedding.EmbeddingRequest;
 import com.theokanning.openai.embedding.EmbeddingResult;
 import com.theokanning.openai.service.OpenAiService;
@@ -55,14 +56,40 @@ public class OpenAiServiceImpl implements GenerativeAiService<String, List<Compl
         return choice.getText();
     }
 
-    public String continueConversation(List<ChatMessage> userPrompts, List<ChatMessage> gptResponses) {
-        List<ChatMessage> fullConversation = new ArrayList<>();
-        fullConversation.addAll(userPrompts);
-        fullConversation.addAll(gptResponses);
+    public String singleChat(String input) {
+        CompletionRequest request = CompletionRequest.builder()
+                .model(openAiChatModel)
+                .prompt(input)
+                .maxTokens(100)
+                .temperature(0.5)
+                .topP(0.5)
+                .build();
+
+        try {
+            CompletionResult response = openAiService.createCompletion(request);
+            if (!response.getChoices().isEmpty()) {
+                return response.getChoices().get(0).getText().trim();
+            }
+        } catch (Exception e) {
+            log.error("Error: {}", e.getMessage(), e);
+            return "Error parsing text.";
+        }
+        return "Unable to parse response.";
+    }
+
+    public String continueConversation(List<String> userPrompts, List<String> gptResponses) {
+        String userMessages = String.join("\n", userPrompts);
+        String gptResponse = String.join("\n", gptResponses);
+
+        List<ChatMessage> messages = new ArrayList<>();
+        ChatMessage userMessage = new ChatMessage(ChatMessageRole.USER.value(), userMessages);
+        ChatMessage gptMessage = new ChatMessage(ChatMessageRole.ASSISTANT.value(), gptResponse);
+        messages.add(userMessage);
+        messages.add(gptMessage);
 
         ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest.builder()
                 .model(openAiChatModel)
-                .messages(fullConversation)
+                .messages(messages)
                 .maxTokens(200)
                 .build();
 
@@ -104,7 +131,7 @@ public class OpenAiServiceImpl implements GenerativeAiService<String, List<Compl
                 .prompt(prompt)
                 .maxTokens(200)
                 .temperature(0.5)
-                .topP(1.0)
+                .topP(0.5)
                 .build();
 
         try {
@@ -116,7 +143,6 @@ public class OpenAiServiceImpl implements GenerativeAiService<String, List<Compl
             log.error("Error summarizing text: {}", e.getMessage(), e);
             return "Error summarizing text.";
         }
-
         return "Unable to generate summary.";
     }
 }
