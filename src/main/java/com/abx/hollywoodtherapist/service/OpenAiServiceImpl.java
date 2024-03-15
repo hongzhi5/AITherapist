@@ -2,8 +2,8 @@ package com.abx.hollywoodtherapist.service;
 
 import com.theokanning.openai.completion.CompletionChoice;
 import com.theokanning.openai.completion.CompletionRequest;
-import com.theokanning.openai.completion.CompletionResult;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
+import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.embedding.EmbeddingRequest;
@@ -57,22 +57,27 @@ public class OpenAiServiceImpl implements GenerativeAiService<String, List<Compl
     }
 
     public String singleChat(String input) {
-        CompletionRequest request = CompletionRequest.builder()
+        List<ChatMessage> messages = new ArrayList<>();
+        ChatMessage userMessage = new ChatMessage(ChatMessageRole.USER.value(), input);
+        messages.add(userMessage);
+
+        ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest.builder()
                 .model(openAiChatModel)
-                .prompt(input)
+                .messages(messages)
                 .maxTokens(100)
                 .temperature(0.5)
                 .topP(0.5)
                 .build();
 
         try {
-            CompletionResult response = openAiService.createCompletion(request);
+            ChatCompletionResult response = openAiService.createChatCompletion(chatCompletionRequest);
+
             if (!response.getChoices().isEmpty()) {
-                return response.getChoices().get(0).getText().trim();
+                return response.getChoices().get(0).getMessage().getContent().trim();
             }
         } catch (Exception e) {
             log.error("Error: {}", e.getMessage(), e);
-            return "Error parsing text.";
+            return "Error.";
         }
         return "Unable to parse response.";
     }
@@ -123,26 +128,29 @@ public class OpenAiServiceImpl implements GenerativeAiService<String, List<Compl
         }
     }
 
-    public String summarizeText(String inputText) {
-        String prompt = "Summarize the following text:\n\n" + inputText;
+    public String summarizeText(String input) {
+        String prompt = "Summarize the following text:\n\n" + input;
+        List<ChatMessage> messages = new ArrayList<>();
+        ChatMessage userMessage = new ChatMessage(ChatMessageRole.USER.value(), prompt);
+        messages.add(userMessage);
 
-        CompletionRequest request = CompletionRequest.builder()
+        ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest.builder()
                 .model(openAiChatModel)
-                .prompt(prompt)
+                .messages(messages)
                 .maxTokens(200)
-                .temperature(0.5)
-                .topP(0.5)
                 .build();
 
         try {
-            CompletionResult response = openAiService.createCompletion(request);
-            if (!response.getChoices().isEmpty()) {
-                return response.getChoices().get(0).getText().trim();
-            }
+            ChatMessage newGptResponse = openAiService
+                    .createChatCompletion(chatCompletionRequest)
+                    .getChoices()
+                    .get(0)
+                    .getMessage();
+
+            return newGptResponse.getContent();
         } catch (Exception e) {
-            log.error("Error summarizing text: {}", e.getMessage(), e);
-            return "Error summarizing text.";
+            log.error("Error: {}", e.getMessage(), e);
+            return "Error.";
         }
-        return "Unable to generate summary.";
     }
 }
